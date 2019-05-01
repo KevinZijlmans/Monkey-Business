@@ -14,7 +14,11 @@ import {
 } from "routing-controllers";
 import User from "../users/entity";
 import { Game, Player, Board } from "./entities";
-import { IsBoard, isValidTransition, calculateWinner, finished } from "./logic";
+import {
+  IsBoard,
+  isValidTransition
+  /*calculateWinner,finished*/
+} from "./logic";
 import { Validate } from "class-validator";
 import { io } from "../index";
 
@@ -95,21 +99,21 @@ export default class GameController {
       throw new BadRequestError(`The game is not started yet`);
     if (player.color !== game.turn)
       throw new BadRequestError(`It's not your turn`);
-    if (!isValidTransition(player.color, game.board, update.board)) {
+    if (!isValidTransition(game.guess_board, update.board)) {
       throw new BadRequestError(`Invalid move`);
     }
 
-    const winner = calculateWinner(update.board);
-    if (winner) {
-      game.winner = winner;
-      game.status = "finished";
-    } else if (finished(update.board)) {
-      game.status = "finished";
-    } else {
-      game.turn = player.color === "blue" ? "red" : "blue";
-    }
-    game.board = update.board;
-    await game.save();
+    // const winner = calculateWinner(update.board);
+    // if (winner) {
+    //   game.winner = winner;
+    //   game.status = "finished";
+    // } else if (finished(update.board)) {
+    //   game.status = "finished";
+    // } else {
+    //   game.turn = player.color === "blue" ? "red" : "blue";
+    // }
+    // game.guess_board = update.board;
+    // await game.save();
 
     io.emit("action", {
       type: "UPDATE_GAME",

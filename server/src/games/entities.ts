@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 import User from "../users/entity";
 
-export type Color = "blue" | "red" | null;
+export type Color = "blue" | "red";
 export type Symbol = false | true;
 export type Row = [Symbol | null, Symbol | null, Symbol | null];
 export type Board = [Row, Row, Row];
@@ -30,10 +30,10 @@ export class Game extends BaseEntity {
   @Column("json", { default: emptyBoard })
   guess_board: Board;
 
-  @Column("char", { length: 1, default: "blue" })
+  @Column("char", { length: 4, default: "blue" })
   turn: Color;
 
-  @Column("char", { length: 1, nullable: true })
+  @Column("char", { length: 4, nullable: true })
   winner: Color;
 
   @Column("text", { default: "pending" })
@@ -57,7 +57,7 @@ export class Player extends BaseEntity {
   @ManyToOne(_ => Game, game => game.players)
   game: Game;
 
-  @Column("char", { length: 1 })
+  @Column("char", { length: 4 })
   color: Color;
 
   @Column("integer", { name: "user_id" })

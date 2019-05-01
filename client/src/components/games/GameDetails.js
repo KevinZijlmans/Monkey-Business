@@ -5,7 +5,7 @@ import { getGames, joinGame, updateGame } from "../../actions/games";
 import { getUsers } from "../../actions/users";
 import { userId } from "../../jwt";
 import Paper from "@material-ui/core/Paper";
-import Board from "./Board";
+import { myBoard, guessBoard } from "./Board";
 import "./GameDetails.css";
 
 class GameDetails extends PureComponent {
@@ -66,10 +66,10 @@ class GameDetails extends PureComponent {
         {game.status !== "pending" && (
           <div>
             <h1>Your board</h1>
-            <Board board={game.my_board} makeMove={this.makeMove} />
+            <myBoard board={game.my_board} makeMove={this.makeMove} />
 
             <h1>Your guesses</h1>
-            <Board board={game.guess_board} makeMove={this.makeMove} />
+            <guessBoard board={game.guess_board} makeMove={this.makeMove} />
           </div>
         )}
       </Paper>
