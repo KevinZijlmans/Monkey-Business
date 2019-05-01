@@ -9,13 +9,14 @@ import {
 } from "typeorm";
 import User from "../users/entity";
 
-export type Symbol = "x" | "o";
+export type Color = "blue" | "red" | null;
+export type Symbol = false | true;
 export type Row = [Symbol | null, Symbol | null, Symbol | null];
 export type Board = [Row, Row, Row];
 
 type Status = "pending" | "started" | "finished";
 
-const emptyRow: Row = [null, null, null];
+const emptyRow: Row = [false, false, false];
 const emptyBoard: Board = [emptyRow, emptyRow, emptyRow];
 
 @Entity()
@@ -24,13 +25,16 @@ export class Game extends BaseEntity {
   id?: number;
 
   @Column("json", { default: emptyBoard })
-  board: Board;
+  my_board: Board;
 
-  @Column("char", { length: 1, default: "x" })
-  turn: Symbol;
+  @Column("json", { default: emptyBoard })
+  guess_board: Board;
+
+  @Column("char", { length: 1, default: "blue" })
+  turn: Color;
 
   @Column("char", { length: 1, nullable: true })
-  winner: Symbol;
+  winner: Color;
 
   @Column("text", { default: "pending" })
   status: Status;
@@ -42,7 +46,7 @@ export class Game extends BaseEntity {
 }
 
 @Entity()
-@Index(["game", "user", "symbol"], { unique: true })
+@Index(["game", "user", "color"], { unique: true })
 export class Player extends BaseEntity {
   @PrimaryGeneratedColumn()
   id?: number;
@@ -54,7 +58,7 @@ export class Player extends BaseEntity {
   game: Game;
 
   @Column("char", { length: 1 })
-  symbol: Symbol;
+  color: Color;
 
   @Column("integer", { name: "user_id" })
   userId: number;
