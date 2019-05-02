@@ -2,16 +2,16 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface
 } from "class-validator";
-import { Board, Row, Color } from "./entities";
+import { Board } from "./entities";
 
 @ValidatorConstraint()
 export class IsBoard implements ValidatorConstraintInterface {
   validate(board: Board) {
     const symbols = [false, true, null, "B", "S"];
     return (
-      board.length === 3 &&
+      board.length === 8 &&
       board.every(
-        row => row.length === 3 && row.every(symbol => symbols.includes(symbol))
+        row => row.length === 8 && row.every(symbol => symbols.includes(symbol))
       )
     );
   }

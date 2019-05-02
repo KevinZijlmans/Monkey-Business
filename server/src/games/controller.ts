@@ -39,11 +39,16 @@ export default class GameController {
       game: entity,
       user,
       color: "blue",
-      my_board: shuffle([
-        ["🌊", "🌊", "⛵"],
-        ["⛵", "🌊", "🌊"],
-        ["🌊", "⛵", "🌊"]
-      ]),
+      my_board: [
+        shuffle(["🌲", "🌲", "🙊", "🌲", "🌲", "🙊", "🌲", "🌲"]),
+        shuffle(["🌲", "🌲", "🙊", "🌲", "🌲", "🙊", "🌲", "🌲"]),
+        shuffle(["🌲", "🌲", "🙊", "🌲", "🌲", "🙊", "🌲", "🌲"]),
+        shuffle(["🌲", "🌲", "🙊", "🌲", "🌲", "🙊", "🌲", "🌲"]),
+        shuffle(["🌲", "🌲", "🙊", "🌲", "🌲", "🙊", "🌲", "🌲"]),
+        shuffle(["🌲", "🌲", "🙊", "🌲", "🌲", "🙊", "🌲", "🌲"]),
+        shuffle(["🌲", "🌲", "🙊", "🌲", "🌲", "🙊", "🌲", "🌲"]),
+        shuffle(["🌲", "🌲", "🙊", "🌲", "🌲", "🙊", "🌲", "🌲"])
+      ],
       hitCount: 0
     }).save();
 
@@ -73,11 +78,16 @@ export default class GameController {
       game,
       user,
       color: "red",
-      my_board: shuffle([
-        ["🌊", "🌊", "⛵"],
-        ["⛵", "🌊", "🌊"],
-        ["🌊", "⛵", "🌊"]
-      ]),
+      my_board: [
+        shuffle(["🌲", "🌲", "🙊", "🌲", "🌲", "🙊", "🌲", "🌲"]),
+        shuffle(["🌲", "🌲", "🙊", "🌲", "🌲", "🙊", "🌲", "🌲"]),
+        shuffle(["🌲", "🌲", "🙊", "🌲", "🌲", "🙊", "🌲", "🌲"]),
+        shuffle(["🌲", "🌲", "🙊", "🌲", "🌲", "🙊", "🌲", "🌲"]),
+        shuffle(["🌲", "🌲", "🙊", "🌲", "🌲", "🙊", "🌲", "🌲"]),
+        shuffle(["🌲", "🌲", "🙊", "🌲", "🌲", "🙊", "🌲", "🌲"]),
+        shuffle(["🌲", "🌲", "🙊", "🌲", "🌲", "🙊", "🌲", "🌲"]),
+        shuffle(["🌲", "🌲", "🙊", "🌲", "🌲", "🙊", "🌲", "🌲"])
+      ],
       hitCount: 0
     }).save();
 
@@ -118,9 +128,9 @@ export default class GameController {
       const y = update[1];
       const targetRow = otherPlayer.my_board[x];
       const targetSymbol = targetRow[y];
-      const isHit = targetSymbol === "⛵";
+      const isHit = targetSymbol === "🙊";
       const row = player.guess_board[x];
-      row[y] = isHit ? "💥" : "💦";
+      row[y] = isHit ? "🙈" : "💩";
       player.hitCount = isHit ? player.hitCount + 1 : player.hitCount;
       await player.save();
     }
@@ -128,7 +138,7 @@ export default class GameController {
     const updatedGame = await Game.findOneById(gameId);
 
     if (updatedGame) {
-      if (player.hitCount === 3) {
+      if (player.hitCount === 48) {
         updatedGame.winner = player.color;
         updatedGame.status = "finished";
       } else {
