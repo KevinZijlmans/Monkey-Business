@@ -1,27 +1,27 @@
 import React from "react";
 import "./Board.css";
 
-const renderCelMyBoard = (makeMove, rowIndex, cellIndex, symbol, hasTurn) => {
+const renderCelMyBoard = (rowIndex, cellIndex, symbol, hasTurn) => {
   return (
-    <button
-      className="board-tile"
-      disabled={hasTurn}
-      onClick={() => makeMove(rowIndex, cellIndex)}
-      key={`${rowIndex}-${cellIndex}`}
-    >
+    <td className="board-tile" key={`${rowIndex}-${cellIndex}`}>
       {symbol || "-"}
-    </button>
+    </td>
   );
 };
 
-export const myBoard = ({ board, makeMove }) =>
-  board.map((cells, rowIndex) => (
-    <div key={rowIndex}>
-      {cells.map((symbol, cellIndex) =>
-        renderCelMyBoard(makeMove, rowIndex, cellIndex, symbol, false)
-      )}
-    </div>
+export const MyBoard = ({ board }) => {
+  return board.map((cells, rowIndex) => (
+    <table>
+      <tbody>
+        <tr key={rowIndex}>
+          {cells.map((symbol, cellIndex) =>
+            renderCelMyBoard(rowIndex, cellIndex, symbol, false)
+          )}
+        </tr>
+      </tbody>
+    </table>
   ));
+};
 
 const renderCelGuessBoard = (
   makeMove,
@@ -42,7 +42,7 @@ const renderCelGuessBoard = (
   );
 };
 
-export const guessBoard = ({ board, makeMove }) =>
+export const GuessBoard = ({ board, makeMove }) =>
   board.map((cells, rowIndex) => (
     <div key={rowIndex}>
       {cells.map((symbol, cellIndex) =>

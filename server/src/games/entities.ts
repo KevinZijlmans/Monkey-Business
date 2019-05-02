@@ -3,32 +3,27 @@ import {
   PrimaryGeneratedColumn,
   Column,
   Entity,
-  Index,
   OneToMany,
   ManyToOne
 } from "typeorm";
 import User from "../users/entity";
 
 export type Color = "blue" | "red";
-export type Symbol = false | true;
+export type Boat = "B";
+export type Sea = "S";
+export type Symbol = false | true | Boat | Sea | "X" | "O";
 export type Row = [Symbol | null, Symbol | null, Symbol | null];
 export type Board = [Row, Row, Row];
 
 type Status = "pending" | "started" | "finished";
 
-const emptyRow: Row = [false, false, false];
-const emptyBoard: Board = [emptyRow, emptyRow, emptyRow];
+const guessEmptyRow: Row = [false, false, false];
+const guessEmptyBoard: Board = [guessEmptyRow, guessEmptyRow, guessEmptyRow];
 
 @Entity()
 export class Game extends BaseEntity {
   @PrimaryGeneratedColumn()
   id?: number;
-
-  @Column("json", { default: emptyBoard })
-  my_board: Board;
-
-  @Column("json", { default: emptyBoard })
-  guess_board: Board;
 
   @Column("char", { length: 4, default: "blue" })
   turn: Color;
@@ -46,7 +41,6 @@ export class Game extends BaseEntity {
 }
 
 @Entity()
-@Index(["game", "user", "color"], { unique: true })
 export class Player extends BaseEntity {
   @PrimaryGeneratedColumn()
   id?: number;
@@ -62,4 +56,10 @@ export class Player extends BaseEntity {
 
   @Column("integer", { name: "user_id" })
   userId: number;
+
+  @Column("json")
+  my_board: Board;
+
+  @Column("json", { default: guessEmptyBoard })
+  guess_board: Board;
 }

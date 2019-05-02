@@ -14,11 +14,7 @@ import {
 } from "routing-controllers";
 import User from "../users/entity";
 import { Game, Player, Board } from "./entities";
-import {
-  IsBoard,
-  isValidTransition
-  /*calculateWinner,finished*/
-} from "./logic";
+import { IsBoard, shuffle } from "./logic";
 import { Validate } from "class-validator";
 import { io } from "../index";
 
@@ -27,6 +23,9 @@ class GameUpdate {
     message: "Not a valid board"
   })
   board: Board;
+  my_board: Board;
+  rowIndex: number;
+  columnIndex: number;
 }
 
 @JsonController()
@@ -40,7 +39,8 @@ export default class GameController {
     await Player.create({
       game: entity,
       user,
-      color: "blue"
+      color: "blue",
+      my_board: shuffle([["S", "S", "B"], ["B", "S", "S"], ["S", "B", "S"]])
     }).save();
 
     const game = await Game.findOneById(entity.id);
@@ -68,7 +68,8 @@ export default class GameController {
     const player = await Player.create({
       game,
       user,
-      color: "red"
+      color: "red",
+      my_board: shuffle([["S", "S", "B"], ["B", "S", "S"], ["S", "B", "S"]])
     }).save();
 
     io.emit("action", {
@@ -99,8 +100,19 @@ export default class GameController {
       throw new BadRequestError(`The game is not started yet`);
     if (player.color !== game.turn)
       throw new BadRequestError(`It's not your turn`);
-    if (!isValidTransition(game.guess_board, update.board)) {
-      throw new BadRequestError(`Invalid move`);
+
+    // This should update the guessboard.
+    const otherPlayer = game.players.find(
+      anotherPlayer => anotherPlayer.color !== player.color
+    );
+
+    if (otherPlayer) {
+      const targetRow = otherPlayer.my_board[update.rowIndex];
+      const targetSymbol = targetRow[update.columnIndex];
+      const isHit = targetSymbol === "B";
+      const row = player.guess_board[update.rowIndex];
+      row[update.columnIndex] = isHit ? "X" : "O";
+      await player.save();
     }
 
     // const winner = calculateWinner(update.board);

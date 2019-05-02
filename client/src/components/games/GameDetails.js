@@ -5,7 +5,7 @@ import { getGames, joinGame, updateGame } from "../../actions/games";
 import { getUsers } from "../../actions/users";
 import { userId } from "../../jwt";
 import Paper from "@material-ui/core/Paper";
-import { myBoard, guessBoard } from "./Board";
+import { MyBoard, GuessBoard } from "./Board";
 import "./GameDetails.css";
 
 class GameDetails extends PureComponent {
@@ -21,24 +21,25 @@ class GameDetails extends PureComponent {
   makeMove = (toRow, toCell) => {
     const { game, updateGame } = this.props;
 
-    const board = game.board.map((row, rowIndex) =>
-      row.map((cell, cellIndex) => {
-        if (rowIndex === toRow && cellIndex === toCell) return game.turn;
-        else return cell;
-      })
-    );
-    updateGame(game.id, board);
+    updateGame(game.id, [toRow, toCell]);
   };
 
   render() {
     const { game, users, authenticated, userId } = this.props;
+    console.log("game", game);
+    console.log("userId", userId);
 
     if (!authenticated) return <Redirect to="/login" />;
 
     if (game === null || users === null) return "Loading...";
     if (!game) return "Not found";
 
-    const player = game.players.find(p => p.userId === userId);
+    const player =
+      game && game.players && game.players.find(p => p.userId === userId);
+    console.log("player", player);
+    const opponent =
+      game && game.players && game.players.find(p => p.userId !== userId);
+    console.log("opponent", opponent);
 
     const winner = game.players
       .filter(p => p.symbol === game.winner)
@@ -66,10 +67,10 @@ class GameDetails extends PureComponent {
         {game.status !== "pending" && (
           <div>
             <h1>Your board</h1>
-            <myBoard board={game.my_board} makeMove={this.makeMove} />
+            <MyBoard board={player.my_board} />
 
             <h1>Your guesses</h1>
-            <guessBoard board={game.guess_board} makeMove={this.makeMove} />
+            <GuessBoard board={player.guess_board} makeMove={this.makeMove} />
           </div>
         )}
       </Paper>

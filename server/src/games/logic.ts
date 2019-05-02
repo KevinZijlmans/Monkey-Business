@@ -7,7 +7,7 @@ import { Board, Row } from "./entities";
 @ValidatorConstraint()
 export class IsBoard implements ValidatorConstraintInterface {
   validate(board: Board) {
-    const symbols = [false, true, null];
+    const symbols = [false, true, null, "B", "S"];
     return (
       board.length === 3 &&
       board.every(
@@ -17,21 +17,22 @@ export class IsBoard implements ValidatorConstraintInterface {
   }
 }
 
-export const isValidTransition = (from: Board, to: Board) => {
-  const changes = from
-    .map((row, rowIndex) =>
-      row.map((symbol, columnIndex) => ({
-        from: symbol,
-        to: to[rowIndex][columnIndex]
-      }))
-    )
-    .reduce((a, b) => a.concat(b))
-    .filter(change => change.from !== change.to);
+export function shuffle(array) {
+  let currentIndex = array.length,
+    temporaryValue,
+    randomIndex;
 
-  return (
-    changes.length === 1 && changes[0].to === false && changes[0].from === true
-  );
-};
+  while (0 !== currentIndex) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
 
 // export const calculateWinner = (board: Board): Color | null =>
 //   board
