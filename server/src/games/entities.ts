@@ -9,9 +9,9 @@ import {
 import User from "../users/entity";
 
 export type Color = "blue" | "red";
-export type Boat = "B";
-export type Sea = "S";
-export type Symbol = false | true | Boat | Sea | "X" | "O";
+export type Boat = "⛵";
+export type Sea = "🌊";
+export type Symbol = false | true | Boat | Sea | "💥" | "💦";
 export type Row = [Symbol | null, Symbol | null, Symbol | null];
 export type Board = [Row, Row, Row];
 

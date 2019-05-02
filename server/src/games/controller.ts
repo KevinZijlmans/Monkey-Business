@@ -27,7 +27,6 @@ class GameUpdate {
   rowIndex: number;
   columnIndex: number;
 }
-
 @JsonController()
 export default class GameController {
   @Authorized()
@@ -40,7 +39,11 @@ export default class GameController {
       game: entity,
       user,
       color: "blue",
-      my_board: shuffle([["S", "S", "B"], ["B", "S", "S"], ["S", "B", "S"]])
+      my_board: shuffle([
+        ["🌊", "🌊", "⛵"],
+        ["⛵", "🌊", "🌊"],
+        ["🌊", "⛵", "🌊"]
+      ])
     }).save();
 
     const game = await Game.findOneById(entity.id);
@@ -69,7 +72,11 @@ export default class GameController {
       game,
       user,
       color: "red",
-      my_board: shuffle([["S", "S", "B"], ["B", "S", "S"], ["S", "B", "S"]])
+      my_board: shuffle([
+        ["🌊", "🌊", "⛵"],
+        ["⛵", "🌊", "🌊"],
+        ["🌊", "⛵", "🌊"]
+      ])
     }).save();
 
     io.emit("action", {
@@ -102,16 +109,19 @@ export default class GameController {
       throw new BadRequestError(`It's not your turn`);
 
     // This should update the guessboard.
+
     const otherPlayer = game.players.find(
       anotherPlayer => anotherPlayer.color !== player.color
     );
-
     if (otherPlayer) {
-      const targetRow = otherPlayer.my_board[update.rowIndex];
-      const targetSymbol = targetRow[update.columnIndex];
-      const isHit = targetSymbol === "B";
-      const row = player.guess_board[update.rowIndex];
-      row[update.columnIndex] = isHit ? "X" : "O";
+      const x = update[0];
+      const y = update[1];
+      const targetRow = otherPlayer.my_board[x];
+      const targetSymbol = targetRow[y];
+      const isHit = targetSymbol === "⛵";
+      const row = player.guess_board[x];
+      row[y] = isHit ? "💥" : "💦";
+      console.log(row);
       await player.save();
     }
 
