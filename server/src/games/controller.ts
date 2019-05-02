@@ -43,7 +43,8 @@ export default class GameController {
         ["🌊", "🌊", "⛵"],
         ["⛵", "🌊", "🌊"],
         ["🌊", "⛵", "🌊"]
-      ])
+      ]),
+      hitCount: 0
     }).save();
 
     const game = await Game.findOneById(entity.id);
@@ -76,7 +77,8 @@ export default class GameController {
         ["🌊", "🌊", "⛵"],
         ["⛵", "🌊", "🌊"],
         ["🌊", "⛵", "🌊"]
-      ])
+      ]),
+      hitCount: 0
     }).save();
 
     io.emit("action", {
@@ -108,8 +110,6 @@ export default class GameController {
     if (player.color !== game.turn)
       throw new BadRequestError(`It's not your turn`);
 
-    // This should update the guessboard.
-
     const otherPlayer = game.players.find(
       anotherPlayer => anotherPlayer.color !== player.color
     );
@@ -121,28 +121,29 @@ export default class GameController {
       const isHit = targetSymbol === "⛵";
       const row = player.guess_board[x];
       row[y] = isHit ? "💥" : "💦";
-      console.log(row);
+      player.hitCount = isHit ? player.hitCount + 1 : player.hitCount;
       await player.save();
     }
 
-    // const winner = calculateWinner(update.board);
-    // if (winner) {
-    //   game.winner = winner;
-    //   game.status = "finished";
-    // } else if (finished(update.board)) {
-    //   game.status = "finished";
-    // } else {
-    //   game.turn = player.color === "blue" ? "red" : "blue";
-    // }
-    // game.guess_board = update.board;
-    // await game.save();
+    const updatedGame = await Game.findOneById(gameId);
 
+    if (updatedGame) {
+      if (player.hitCount === 3) {
+        updatedGame.winner = player.color;
+        updatedGame.status = "finished";
+      } else {
+        updatedGame.turn = player.color === "blue" ? "red" : "blue";
+      }
+      player.guess_board = update.board;
+      await updatedGame.save();
+    }
+    console.log("hitCount", player.hitCount);
     io.emit("action", {
       type: "UPDATE_GAME",
-      payload: game
+      payload: updatedGame
     });
 
-    return game;
+    return updatedGame;
   }
 
   @Authorized()

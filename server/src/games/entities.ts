@@ -8,7 +8,7 @@ import {
 } from "typeorm";
 import User from "../users/entity";
 
-export type Color = "blue" | "red";
+export type Color = "blue" | "red" | true | false;
 export type Boat = "⛵";
 export type Sea = "🌊";
 export type Symbol = false | true | Boat | Sea | "💥" | "💦";
@@ -53,6 +53,9 @@ export class Player extends BaseEntity {
 
   @Column("char", { length: 4 })
   color: Color;
+
+  @Column("integer", { default: 0 })
+  hitCount: number;
 
   @Column("integer", { name: "user_id" })
   userId: number;
