@@ -9,9 +9,9 @@ export class IsBoard implements ValidatorConstraintInterface {
   validate(board: Board) {
     const symbols = [false, true, null, "B", "S"];
     return (
-      board.length === 8 &&
+      board.length === 5 &&
       board.every(
-        row => row.length === 8 && row.every(symbol => symbols.includes(symbol))
+        row => row.length === 5 && row.every(symbol => symbols.includes(symbol))
       )
     );
   }

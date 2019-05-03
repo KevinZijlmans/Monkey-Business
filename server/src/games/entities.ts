@@ -9,37 +9,16 @@ import {
 import User from "../users/entity";
 
 export type Color = "blue" | "red" | true | false;
-export type Boat = "🙊";
-export type Sea = "🌲";
-export type Symbol = false | true | Boat | Sea | "🙈" | "💩";
-export type Row = [
-  Symbol,
-  Symbol,
-  Symbol,
-  Symbol,
-  Symbol,
-  Symbol,
-  Symbol,
-  Symbol
-];
-export type Board = [Row, Row, Row, Row, Row, Row, Row, Row];
+export type Monkey = "🙊";
+export type Tree = "🌲";
+export type Symbol = false | true | Monkey | Tree | "🍌" | "💩";
+export type Row = [Symbol, Symbol, Symbol, Symbol, Symbol];
+export type Board = [Row, Row, Row, Row, Row];
 
 type Status = "pending" | "started" | "finished";
 
-const guessEmptyRow: Row = [
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false,
-  false
-];
+const guessEmptyRow: Row = [false, false, false, false, false];
 const guessEmptyBoard: Board = [
-  guessEmptyRow,
-  guessEmptyRow,
-  guessEmptyRow,
   guessEmptyRow,
   guessEmptyRow,
   guessEmptyRow,

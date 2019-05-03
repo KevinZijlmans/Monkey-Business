@@ -3,17 +3,17 @@ import "./Board.css";
 
 const renderCelMyBoard = (rowIndex, cellIndex, symbol, hasTurn) => {
   return (
-    <td className="board-tile" key={`${rowIndex}-${cellIndex}`}>
-      {symbol || "-"}
+    <td className="board-tile" key={`0-${rowIndex}-${cellIndex}`}>
+      <span className="emoji">{symbol || "-"}</span>
     </td>
   );
 };
 
 export const MyBoard = ({ board }) => {
   return board.map((cells, rowIndex) => (
-    <table>
+    <table align="center">
       <tbody>
-        <tr key={rowIndex}>
+        <tr key={`0-${rowIndex}`}>
           {cells.map((symbol, cellIndex) =>
             renderCelMyBoard(rowIndex, cellIndex, symbol, false)
           )}
@@ -35,16 +35,16 @@ const renderCelGuessBoard = (
       className="board-tile"
       disabled={hasTurn}
       onClick={() => makeMove(rowIndex, cellIndex)}
-      key={`${rowIndex}-${cellIndex}`}
+      key={`1-${rowIndex}-${cellIndex}`}
     >
-      {symbol || "-"}
+      <span className="emoji">{symbol || "🌲"}</span>
     </button>
   );
 };
 
 export const GuessBoard = ({ board, makeMove }) =>
   board.map((cells, rowIndex) => (
-    <div key={rowIndex}>
+    <div key={`1-${rowIndex}`}>
       {cells.map((symbol, cellIndex) =>
         renderCelGuessBoard(makeMove, rowIndex, cellIndex, symbol, false)
       )}

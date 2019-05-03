@@ -7,6 +7,7 @@ import { userId } from "../../jwt";
 import Paper from "@material-ui/core/Paper";
 import { MyBoard, GuessBoard } from "./Board";
 import "./GameDetails.css";
+// import gameStarts from "./Sounds/Game-starts.wav";
 
 class GameDetails extends PureComponent {
   componentWillMount() {
@@ -25,9 +26,8 @@ class GameDetails extends PureComponent {
   };
 
   render() {
+    const gameStart = require("./Sounds/Game-starts.wav");
     const { game, users, authenticated, userId } = this.props;
-    console.log("game", game);
-    console.log("userId", userId);
 
     if (!authenticated) return <Redirect to="/login" />;
 
@@ -36,10 +36,9 @@ class GameDetails extends PureComponent {
 
     const player =
       game && game.players && game.players.find(p => p.userId === userId);
-    console.log("player", player);
-    const opponent =
-      game && game.players && game.players.find(p => p.userId !== userId);
-    console.log("opponent", opponent);
+
+    // const opponent =
+    //   game && game.players && game.players.find(p => p.userId !== userId);
 
     const winner = game.players
       .filter(p => p.symbol === game.winner)
@@ -47,13 +46,19 @@ class GameDetails extends PureComponent {
 
     return (
       <Paper className="outer-paper">
-        <h1>Game #{game.id}</h1>
+        <h1>GAME #{game.id}</h1>
 
         <p>Status: {game.status}</p>
-        {console.log(player)}
-        {console.log(game)}
+        <p>Found bananas: {player && player.hitCount}</p>
+        <p>Bananas left: {player && 10 - player.hitCount}</p>
+        {console.log("gameStart test:", gameStart)}
         {game.status === "started" && player && player.color === game.turn && (
-          <div>It's your turn!</div>
+          <div>
+            It's your turn!
+            <audio autoPlay>
+              <source src={this.gameStart} type="audio/wav" />
+            </audio>
+          </div>
         )}
 
         {game.status === "pending" &&
@@ -67,10 +72,10 @@ class GameDetails extends PureComponent {
 
         {game.status !== "pending" && (
           <div>
-            <h1>Your board</h1>
+            <h1>YOUR BOARD</h1>
             <MyBoard board={player.my_board} />
 
-            <h1>Your guesses</h1>
+            <h1>YOUR GUESSES</h1>
             <GuessBoard board={player.guess_board} makeMove={this.makeMove} />
           </div>
         )}
