@@ -7,7 +7,6 @@ import { userId } from "../../jwt";
 import Paper from "@material-ui/core/Paper";
 import { MyBoard, GuessBoard } from "./Board";
 import "./GameDetails.css";
-// import gameStarts from "./Sounds/Game-starts.wav";
 
 class GameDetails extends PureComponent {
   componentWillMount() {
@@ -37,9 +36,6 @@ class GameDetails extends PureComponent {
     const player =
       game && game.players && game.players.find(p => p.userId === userId);
 
-    // const opponent =
-    //   game && game.players && game.players.find(p => p.userId !== userId);
-
     const winner = game.players
       .filter(p => p.symbol === game.winner)
       .map(p => p.userId)[0];
@@ -51,14 +47,9 @@ class GameDetails extends PureComponent {
         <p>Status: {game.status}</p>
         <p>Found bananas: {player && player.hitCount}</p>
         <p>Bananas left: {player && 10 - player.hitCount}</p>
-        {console.log("gameStart test:", gameStart)}
+
         {game.status === "started" && player && player.color === game.turn && (
-          <div>
-            It's your turn!
-            <audio autoPlay>
-              <source src={this.gameStart} type="audio/wav" />
-            </audio>
-          </div>
+          <div>It's your turn!</div>
         )}
 
         {game.status === "pending" &&
