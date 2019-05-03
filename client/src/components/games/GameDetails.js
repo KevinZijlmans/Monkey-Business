@@ -5,7 +5,7 @@ import { getGames, joinGame, updateGame } from "../../actions/games";
 import { getUsers } from "../../actions/users";
 import { userId } from "../../jwt";
 import Paper from "@material-ui/core/Paper";
-import Board from "./Board";
+import { MyBoard, GuessBoard } from "./Board";
 import "./GameDetails.css";
 
 class GameDetails extends PureComponent {
@@ -21,16 +21,11 @@ class GameDetails extends PureComponent {
   makeMove = (toRow, toCell) => {
     const { game, updateGame } = this.props;
 
-    const board = game.board.map((row, rowIndex) =>
-      row.map((cell, cellIndex) => {
-        if (rowIndex === toRow && cellIndex === toCell) return game.turn;
-        else return cell;
-      })
-    );
-    updateGame(game.id, board);
+    updateGame(game.id, [toRow, toCell]);
   };
 
   render() {
+    const gameStart = require("./Sounds/Game-starts.wav");
     const { game, users, authenticated, userId } = this.props;
 
     if (!authenticated) return <Redirect to="/login" />;
@@ -38,7 +33,8 @@ class GameDetails extends PureComponent {
     if (game === null || users === null) return "Loading...";
     if (!game) return "Not found";
 
-    const player = game.players.find(p => p.userId === userId);
+    const player =
+      game && game.players && game.players.find(p => p.userId === userId);
 
     const winner = game.players
       .filter(p => p.symbol === game.winner)
@@ -46,11 +42,13 @@ class GameDetails extends PureComponent {
 
     return (
       <Paper className="outer-paper">
-        <h1>Game #{game.id}</h1>
+        <h1>GAME #{game.id}</h1>
 
         <p>Status: {game.status}</p>
+        <p>Found bananas: {player && player.hitCount}</p>
+        <p>Bananas left: {player && 10 - player.hitCount}</p>
 
-        {game.status === "started" && player && player.symbol === game.turn && (
+        {game.status === "started" && player && player.color === game.turn && (
           <div>It's your turn!</div>
         )}
 
@@ -65,11 +63,11 @@ class GameDetails extends PureComponent {
 
         {game.status !== "pending" && (
           <div>
-            <h1>Your board</h1>
-            <Board board={game.my_board} makeMove={this.makeMove} />
+            <h1>YOUR BOARD</h1>
+            <MyBoard board={player.my_board} />
 
-            <h1>Your guesses</h1>
-            <Board board={game.guess_board} makeMove={this.makeMove} />
+            <h1>YOUR GUESSES</h1>
+            <GuessBoard board={player.guess_board} makeMove={this.makeMove} />
           </div>
         )}
       </Paper>

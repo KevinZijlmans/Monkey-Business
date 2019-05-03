@@ -14,7 +14,7 @@ import {
 } from "routing-controllers";
 import User from "../users/entity";
 import { Game, Player, Board } from "./entities";
-import { IsBoard, isValidTransition, calculateWinner, finished } from "./logic";
+import { IsBoard, shuffle } from "./logic";
 import { Validate } from "class-validator";
 import { io } from "../index";
 
@@ -23,8 +23,10 @@ class GameUpdate {
     message: "Not a valid board"
   })
   board: Board;
+  my_board: Board;
+  rowIndex: number;
+  columnIndex: number;
 }
-
 @JsonController()
 export default class GameController {
   @Authorized()
@@ -36,7 +38,15 @@ export default class GameController {
     await Player.create({
       game: entity,
       user,
-      color: "blue"
+      color: "blue",
+      my_board: [
+        shuffle(["🌲", "🌲", "🌲", "🙊", "🙊"]),
+        shuffle(["🌲", "🌲", "🌲", "🙊", "🙊"]),
+        shuffle(["🌲", "🌲", "🌲", "🙊", "🙊"]),
+        shuffle(["🌲", "🌲", "🌲", "🙊", "🙊"]),
+        shuffle(["🌲", "🌲", "🌲", "🙊", "🙊"])
+      ],
+      hitCount: 0
     }).save();
 
     const game = await Game.findOneById(entity.id);
@@ -64,7 +74,15 @@ export default class GameController {
     const player = await Player.create({
       game,
       user,
-      color: "red"
+      color: "red",
+      my_board: [
+        shuffle(["🌲", "🌲", "🌲", "🙊", "🙊"]),
+        shuffle(["🌲", "🌲", "🌲", "🙊", "🙊"]),
+        shuffle(["🌲", "🌲", "🌲", "🙊", "🙊"]),
+        shuffle(["🌲", "🌲", "🌲", "🙊", "🙊"]),
+        shuffle(["🌲", "🌲", "🌲", "🙊", "🙊"])
+      ],
+      hitCount: 0
     }).save();
 
     io.emit("action", {
@@ -95,28 +113,41 @@ export default class GameController {
       throw new BadRequestError(`The game is not started yet`);
     if (player.color !== game.turn)
       throw new BadRequestError(`It's not your turn`);
-    if (!isValidTransition(player.color, game.board, update.board)) {
-      throw new BadRequestError(`Invalid move`);
+
+    const otherPlayer = game.players.find(
+      anotherPlayer => anotherPlayer.color !== player.color
+    );
+    if (otherPlayer) {
+      const x = update[0];
+      const y = update[1];
+      const targetRow = otherPlayer.my_board[x];
+      const targetSymbol = targetRow[y];
+      const isHit = targetSymbol === "🙊";
+      const row = player.guess_board[x];
+      row[y] = isHit ? "🍌" : "💩";
+      player.hitCount = isHit ? player.hitCount + 1 : player.hitCount;
+      await player.save();
     }
 
-    const winner = calculateWinner(update.board);
-    if (winner) {
-      game.winner = winner;
-      game.status = "finished";
-    } else if (finished(update.board)) {
-      game.status = "finished";
-    } else {
-      game.turn = player.color === "blue" ? "red" : "blue";
-    }
-    game.board = update.board;
-    await game.save();
+    const updatedGame = await Game.findOneById(gameId);
 
+    if (updatedGame) {
+      if (player.hitCount === 10) {
+        updatedGame.winner = player.color;
+        updatedGame.status = "finished";
+      } else {
+        updatedGame.turn = player.color === "blue" ? "red" : "blue";
+      }
+      player.guess_board = update.board;
+      await updatedGame.save();
+    }
+    console.log("hitCount", player.hitCount);
     io.emit("action", {
       type: "UPDATE_GAME",
-      payload: game
+      payload: updatedGame
     });
 
-    return game;
+    return updatedGame;
   }
 
   @Authorized()

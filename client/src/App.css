@@ -7,6 +7,12 @@
   height: 80px;
 }
 
+h1 {
+  font-family: "CFJUNGLE-Regular";
+  font-style: normal;
+  font-weight: normal;
+}
+
 .App-header {
   background-color: #222;
   height: 150px;
@@ -23,6 +29,15 @@
 }
 
 @keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@font-face {
+  font-family: "CFJUNGLE-Regular";
+  src: url("./components/games/fonts/CFJUNGLE-Regular.ttf");
 }
