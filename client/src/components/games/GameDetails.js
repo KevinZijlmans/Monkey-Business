@@ -25,7 +25,6 @@ class GameDetails extends PureComponent {
   };
 
   render() {
-    const gameStart = require("./Sounds/Game-starts.wav");
     const { game, users, authenticated, userId } = this.props;
 
     if (!authenticated) return <Redirect to="/login" />;
