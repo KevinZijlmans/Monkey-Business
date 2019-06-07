@@ -1,11 +1,4 @@
-import {
-  BaseEntity,
-  PrimaryGeneratedColumn,
-  Column,
-  Entity,
-  OneToMany,
-  ManyToOne
-} from "typeorm";
+import { BaseEntity, PrimaryGeneratedColumn, Column, Entity, OneToMany, ManyToOne } from "typeorm";
 import User from "../users/entity";
 
 export type Color = "blue" | "red" | true | false;
